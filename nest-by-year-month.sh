@@ -1,17 +1,22 @@
 #!/bin/bash
 STARTTIME=$(date +%s)
-echo "Start full nesting by year and month..."
+echo "Start full nesting /nested directory by year and month..."
 
-for image in `ls -1`; do
-  export year=`stat -f %SB -t %Y $image`
-  export month=`stat -f %SB -t %m $image`
-    if [ -d "$year/$month" ]
+for image in `find nested -maxdepth 1 -not -type d`; do
+  export year=`stat -f %SB -t %Y "$image"`
+  export month=`stat -f %SB -t %m "$image"`
+  # echo "nested/$year/$month"
+    if [ -d "nested/$year/$month" ]
     then
-      mv $image "$year/$month"
+      mv -n -v "$image" "nested/$year/$month"
+    elif [ -d "nested/$year" ]
+    then
+      mkdir "nested/$year/$month"
+      mv -n -v "$image" "nested/$year/$month"
     else
-      mkdir $year
-      mkdir "$year/$month"
-      mv $image "$year/$month"
+      mkdir "nested/$year"
+      mkdir "nested/$year/$month"
+      mv -n -v "$image" "nested/$year/$month"
     fi
 done
 
